@@ -13,7 +13,7 @@ LIBS := glfw3
 # General compiler flags
 COMPILE_FLAGS := -std=c++17 -Wall -Wextra -g
 # Add additional include paths
-INCLUDES := -I src -I src/lib/glad/include #-I src/libs/glm/include -I src/libs/stb_image
+INCLUDES := -I src -I src/lib/glad/include -I src/lib/stb_image #-I src/libs/glm/include
 # General linker settings
 ifeq ($(UNAME_S),Darwin)
 	LINK_FLAGS = 
