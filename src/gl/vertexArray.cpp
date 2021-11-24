@@ -80,7 +80,7 @@ void VertexArray::bind() const
 
 void VertexArray::draw(GLenum draw) const
 {
-    glDrawElements(draw, indicesCount, GL_UNSIGNED_INT, 0);
+    glDrawElements(draw, indicesCount, GL_UNSIGNED_INT, nullptr);
 }
 
 void VertexArray::addVertexBuffer(int mag, const std::vector<unsigned int>& data)

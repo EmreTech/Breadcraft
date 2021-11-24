@@ -5,7 +5,7 @@ UNAME_S:=$(shell uname -s)
 # The name of the executable to be created
 BIN_NAME := minecraft_clone
 # Compiler used
-CXX ?= clang++
+CXX ?= g++
 # Path to the source directory, relative to the makefile
 SRC_PATH := src
 # Space-separated pkg-config libraries used by this project
@@ -15,8 +15,11 @@ COMPILE_FLAGS := -std=c++17 -Wall -Wextra -g
 # Add additional include paths
 INCLUDES := -I src -I src/lib/glad/include #-I src/libs/glm/include -I src/libs/stb_image
 # General linker settings
-LINK_FLAGS = 
-#endif
+ifeq ($(UNAME_S),Darwin)
+	LINK_FLAGS = 
+else
+	LINK_FLAGS = -lGL -lX11 -lpthread -lXrandr -ldl
+endif
 #### END PROJECT SETTINGS ####
 
 # Optionally you may move the section above to a separate config.mk file, and
@@ -52,11 +55,11 @@ release: export BIN_PATH := build/bin
 
 # Find all source files in the source directory, sorted by most
 # recently modified
-ifeq ($(UNAME_S),Darwin)
+#ifeq ($(UNAME_S),Darwin)
 	SOURCES = $(shell find $(SRC_PATH) -name '*.cpp' -or -name '*.c' | sort -k 1nr | cut -f2-)
-else
-	SOURCES = $(shell find $(SRC_PATH) -name '*.cpp' -or -name '*.c'  -printf '%T@\t%p\n' | sort -k 1nr | cut -f2-)
-endif
+#else
+#	SOURCES = $(shell find $(SRC_PATH) -name '*.cpp' -or -name '*.c'  -printf '%T@\t%p\n' | sort -k 1nr | cut -f2-)
+#endif
 
 # fallback in case the above fails
 rwildcard = $(foreach d, $(wildcard $1*), $(call rwildcard,$d/,$2) \

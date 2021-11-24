@@ -47,9 +47,8 @@ void setup()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     */
-
-    shade.use();
-
+	
+	va.create();
     va.addVertexBuffer(3, vertices);
     va.addIndexBuffer(indices);
 
@@ -65,11 +64,8 @@ void render()
     glClear(GL_COLOR_BUFFER_BIT);
 
     shade.use();
-    //glBindVertexArray(VAO);
-    //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     va.bind();
     va.draw();
-    //glBindVertexArray(0);
 }
 
 int main(void)
