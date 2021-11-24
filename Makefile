@@ -9,7 +9,7 @@ CXX ?= g++
 # Path to the source directory, relative to the makefile
 SRC_PATH := src
 # Space-separated pkg-config libraries used by this project
-LIBS := glfw3
+LIBS := glfw3 glm
 # General compiler flags
 COMPILE_FLAGS := -std=c++17 -Wall -Wextra -g
 # Add additional include paths

@@ -4,6 +4,7 @@
 #include <gl/texture.hpp>
 
 #include <iostream>
+#include <utils/glm_include.hpp>
 
 gl::Shader shade;
 gl::VertexArray va;
@@ -17,26 +18,100 @@ void processInput(GLFWwindow *window)
 
 void setup()
 {
+    glEnable(GL_DEPTH_TEST);
+
     shade.init("./res/shaders/basicVertex.glsl", "./res/shaders/basicFrag.glsl");
 
     std::vector<float> vertices {
-         0.5f,  0.5f, 0.0f,  // top right
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left 
+        // Back
+        1.0f, 1.0f, 0.0f,   // top right
+        1.0f, 0.0f, 0.0f,   // bottom right
+        0.0f, 0.0f, 0.0f,   // bottom left
+        0.0f, 1.0f, 0.0f,   // top left
+
+        // Front
+        1.0f, 1.0f, 1.0f,   // top right
+        1.0f, 0.0f, 1.0f,   // bottom right
+        0.0f, 0.0f, 1.0f,   // bottom left
+        0.0f, 1.0f, 1.0f,   // top left
+
+        // Left
+        0.0f, 1.0f, 1.0f,   // top right
+        0.0f, 1.0f, 0.0f,   // bottom right
+        0.0f, 0.0f, 0.0f,   // bottom left
+        0.0f, 0.0f, 1.0f,   // top left
+
+        // Right
+        1.0f, 1.0f, 1.0f,   // top right
+        1.0f, 1.0f, 0.0f,   // bottom right
+        1.0f, 0.0f, 0.0f,   // bottom left
+        1.0f, 0.0f, 1.0f,   // top left
+
+        // Bottom
+        1.0f, 0.0f, 1.0f,   // top right
+        1.0f, 0.0f, 0.0f,   // bottom right
+        0.0f, 0.0f, 0.0f,   // bottom left
+        0.0f, 0.0f, 1.0f,   // top left
+
+        // Top
+        1.0f, 1.0f, 1.0f,   // top right
+        1.0f, 1.0f, 0.0f,   // bottom right
+        0.0f, 1.0f, 0.0f,   // bottom left
+        0.0f, 1.0f, 1.0f,   // top left
     };
 
     std::vector<float> texCoords {
+        // Back
+        1.0f, 1.0f, // top right
+        1.0f, 0.0f, // bottom right
+        0.0f, 0.0f, // bottom left
+        0.0f, 1.0f, // top left
+
+        // Front
+        1.0f, 1.0f, // top right
+        1.0f, 0.0f, // bottom right
+        0.0f, 0.0f, // bottom left
+        0.0f, 1.0f, // top left
+
+        // Left
+        1.0f, 1.0f, // top right
+        1.0f, 0.0f, // bottom right
+        0.0f, 0.0f, // bottom left
+        0.0f, 1.0f, // top left
+
+        // Right
+        1.0f, 1.0f, // top right
+        1.0f, 0.0f, // bottom right
+        0.0f, 0.0f, // bottom left
+        0.0f, 1.0f, // top left
+
+        // Bottom
+        1.0f, 1.0f, // top right
+        1.0f, 0.0f, // bottom right
+        0.0f, 0.0f, // bottom left
+        0.0f, 1.0f, // top left
+
+        // Top
         1.0f, 1.0f, // top right
         1.0f, 0.0f, // bottom right
         0.0f, 0.0f, // bottom left
         0.0f, 1.0f, // top left
     };
 
-    std::vector<unsigned int> indices {  // note that we start from 0!
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
-    };
+    std::vector<unsigned int> indices;
+    unsigned int iCount = 0;
+
+    for (size_t i{0}; i < 6; i++)
+    {
+        indices.push_back(iCount);
+        indices.push_back(iCount + 1);
+        indices.push_back(iCount + 3);
+        indices.push_back(iCount + 1);
+        indices.push_back(iCount + 2);
+        indices.push_back(iCount + 3);
+
+        iCount += 4;
+    }
 	
 	va.create();
     va.addVertexBuffer(3, vertices);
@@ -50,10 +125,24 @@ void setup()
 void render()
 {
     glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     tex.bind();
     shade.use();
+
+    // TODO: Add transforms here
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 projection = glm::mat4(1.0f);
+
+    model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+    view = glm::translate(view, glm::vec3(0.0f, -0.5f, -3.0f));
+    projection = glm::perspective(glm::radians(45.0f), 1280.0f/720.0f, 0.1f, 100.0f);
+    
+    shade.set("model", model);
+    shade.set("view", view);
+    shade.set("projection", projection);
+
     va.bind();
     va.draw();
 }

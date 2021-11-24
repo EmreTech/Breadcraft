@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <utils/glm_include.hpp>
   
 #include <string>
 
@@ -20,9 +21,10 @@ struct Shader
 
     void use();
 
-    void setBool(const std::string &name, bool value) const;  
-    void setInt(const std::string &name, int value) const;   
-    void setFloat(const std::string &name, float value) const;
+    void set(const std::string &name, bool value) const;  
+    void set(const std::string &name, int value) const;   
+    void set(const std::string &name, float value) const;
+    void set(const std::string &name, const glm::mat4 &val) const;
 };
 
 } //namespace gl
