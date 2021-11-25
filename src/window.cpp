@@ -58,4 +58,5 @@ void setupCallbacks()
     GLFWwindow *win = Window::getWindow();
     glfwSetFramebufferSizeCallback(win, framebuffer_size_callback);
     glfwSetKeyCallback(win, key_callback);
+    glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }

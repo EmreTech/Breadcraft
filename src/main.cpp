@@ -150,6 +150,11 @@ void update()
     player.update();
 }
 
+std::vector<glm::vec3> boxPos {
+    glm::vec3(0.0f, 1.0f, 0.0f),
+    glm::vec3(0.0f, -1.0f, 0.0f),
+};
+
 void render()
 {
     glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
@@ -158,14 +163,17 @@ void render()
     tex.bind();
     shade.use();
 
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-    
-    shade.set("model", model);
     shade.set("camera", player.getCameraMatrix());
 
     va.bind();
-    va.draw();
+    for (int i = 0; i < 2; i++)
+    {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, boxPos[i]);
+        shade.set("model", model);
+
+        va.draw();
+    }
 }
 
 int main(void)
@@ -180,6 +188,9 @@ int main(void)
     {
         DeltaCounter::getInstance().update();
         processInput(Window::getWindow());
+
+        std::cout << "Player rotation: " <<
+        "(" << player.rotation.x << "," << player.rotation.y << ")" << '\n';
 
         update();
         render();
