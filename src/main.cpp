@@ -2,6 +2,9 @@
 #include <gl/shader.hpp>
 #include <gl/vertexArray.hpp>
 #include <gl/texture.hpp>
+#include <utils/keyboard.hpp>
+#include <utils/deltaCounter.hpp>
+#include <entity/player.hpp>
 
 #include <iostream>
 #include <utils/glm_include.hpp>
@@ -10,10 +13,30 @@ gl::Shader shade;
 gl::VertexArray va;
 gl::Texture2D tex;
 
+entity::Player player;
+
+glm::vec2 lastPos, curPos;
+bool firstMouse = true;
+
 void processInput(GLFWwindow *window)
 {
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (Keyboard::getInstance().getKey(GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    curPos.x = xpos;
+    curPos.y = ypos;
+
+    if (firstMouse)
+    {
+        lastPos = curPos;
+        firstMouse = false;
+    }
+
+    player.handleKeys(lastPos, curPos);
+
+    lastPos = curPos;
 }
 
 void setup()
@@ -122,6 +145,11 @@ void setup()
     tex.loadImage("./res/textures/container.jpg");
 }
 
+void update()
+{
+    player.update();
+}
+
 void render()
 {
     glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
@@ -130,18 +158,11 @@ void render()
     tex.bind();
     shade.use();
 
-    // TODO: Add transforms here
     glm::mat4 model = glm::mat4(1.0f);
-    glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 projection = glm::mat4(1.0f);
-
     model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-    view = glm::translate(view, glm::vec3(0.0f, -0.5f, -3.0f));
-    projection = glm::perspective(glm::radians(45.0f), 1280.0f/720.0f, 0.1f, 100.0f);
     
     shade.set("model", model);
-    shade.set("view", view);
-    shade.set("projection", projection);
+    shade.set("camera", player.getCameraMatrix());
 
     va.bind();
     va.draw();
@@ -151,14 +172,16 @@ int main(void)
 {
     if (!Window::init())
         return -1;
-    else
-        setupCallbacks();
+    
+    setupCallbacks();
 
     setup();
     while (!glfwWindowShouldClose(Window::getWindow()))
     {
+        DeltaCounter::getInstance().update();
         processInput(Window::getWindow());
 
+        update();
         render();
 
         glfwPollEvents();

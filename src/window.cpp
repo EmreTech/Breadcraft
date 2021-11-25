@@ -1,5 +1,6 @@
 #include <window.hpp>
 
+#include <utils/keyboard.hpp>
 #include <iostream>
 
 namespace Window
@@ -47,8 +48,14 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 } 
 
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    Keyboard::getInstance().updateKey(key, action);
+}
+
 void setupCallbacks()
 {
     GLFWwindow *win = Window::getWindow();
     glfwSetFramebufferSizeCallback(win, framebuffer_size_callback);
+    glfwSetKeyCallback(win, key_callback);
 }
