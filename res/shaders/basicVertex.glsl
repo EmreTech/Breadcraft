@@ -6,7 +6,7 @@ layout (location = 1) in vec2 aTexCoord;
 out vec2 TexCoord;
 
 uniform mat4 model;
-uniform mat4 camera;
+uniform mat4 camera; // is equal to projection x view
 
 void main()
 {

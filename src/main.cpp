@@ -12,6 +12,7 @@
 gl::Shader shade;
 gl::VertexArray va;
 gl::Texture2D tex;
+std::vector<glm::vec3> boxPos;
 
 entity::Player player;
 
@@ -121,6 +122,11 @@ void setup()
         0.0f, 1.0f, // top left
     };
 
+    for (int y = 0; y < 3; y++)
+        for (int x = 0; x < 3; x++)
+            for (int z = 0; z < 3; z++)
+                boxPos.push_back(glm::vec3(x,y,z));
+            
     std::vector<unsigned int> indices;
     unsigned int iCount = 0;
 
@@ -150,11 +156,6 @@ void update()
     player.update();
 }
 
-std::vector<glm::vec3> boxPos {
-    glm::vec3(0.0f, 1.0f, 0.0f),
-    glm::vec3(0.0f, -1.0f, 0.0f),
-};
-
 void render()
 {
     glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
@@ -166,7 +167,7 @@ void render()
     shade.set("camera", player.getCameraMatrix());
 
     va.bind();
-    for (int i = 0; i < 2; i++)
+    for (size_t i = 0; i < boxPos.size(); i++)
     {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, boxPos[i]);
