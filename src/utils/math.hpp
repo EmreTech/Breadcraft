@@ -8,11 +8,12 @@ glm::vec3 localToGlobalPosition(const glm::vec3 pos, const glm::vec3 localChunkP
 
 glm::vec3 globalToLocalPosition(const glm::vec3 pos)
 {
-    pos.x %= 15;
-    pos.y %= 15;
-    pos.z %= 15;
+    glm::vec3 output{0.0f};
+    output.x = glm::mod(pos.x, 16.0f);
+    output.y = glm::mod(pos.y, 16.0f);
+    output.z = glm::mod(pos.z, 16.0f);
 
-    return pos;
+    return output;
 }
 
 int positionToIndex(const glm::vec3 pos, int size)

@@ -14,7 +14,7 @@ gl::VertexArray va;
 gl::Texture2D tex;
 std::vector<glm::vec3> boxPos;
 
-entity::Player player;
+entity::Player player{glm::vec3(1.0f, 1.0f, 1.0f)};
 
 glm::vec2 lastPos, curPos;
 bool firstMouse = true;
@@ -158,7 +158,7 @@ void update()
 
 void render()
 {
-    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.8417f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     tex.bind();

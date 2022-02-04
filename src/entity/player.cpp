@@ -15,34 +15,6 @@ glm::mat4 calculateCameraMatrix(const glm::vec3 &pos, const glm::vec3 &rot, cons
     view = glm::translate(view, -pos);
 
     return proj * view;
-
-    /*
-    glm::vec3 calculated_pos = glm::vec3(pos.x, 0.0f, pos.z);
-    glm::vec3 target_pos = glm::vec3(0.0f);
-    glm::vec3 world_up = glm::vec3(0.0f, 1.0f, 0.0f);
-    
-    glm::vec3 zaxis = glm::normalize(calculated_pos - target_pos);
-    glm::vec3 xaxis = glm::normalize(glm::cross(glm::normalize(world_up), zaxis));
-    glm::vec3 yaxis = glm::cross(zaxis, xaxis);
-
-    glm::mat4 translation = glm::mat4(1.0f);
-    translation[3][0] = -calculated_pos.x;
-    translation[3][1] = -calculated_pos.y;
-    translation[3][2] = -calculated_pos.z;
-    glm::mat4 rotation = glm::mat4(1.0f);
-    rotation[0][0] = xaxis.x;
-    rotation[1][0] = xaxis.y;
-    rotation[2][0] = xaxis.z;
-    rotation[0][1] = yaxis.x;
-    rotation[1][1] = yaxis.y;
-    rotation[2][1] = yaxis.z;
-    rotation[0][2] = zaxis.x;
-    rotation[1][2] = zaxis.y;
-    rotation[2][2] = zaxis.z; 
-
-    glm::mat4 view = rotation * translation;
-    return proj * view;
-    */
 }
 
 } // namespace
@@ -53,6 +25,12 @@ namespace entity
 
 Player::Player()
 {
+    projection = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
+}
+
+Player::Player(const glm::vec3 startPos)
+{
+    this->position = startPos;
     projection = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
 }
 
@@ -103,12 +81,19 @@ void Player::handleKeys(glm::vec2 oldMouse, glm::vec2 newMouse)
     yOffset *= 1.25f;
 
     rotation.y += xOffset;
-    rotation.x -= yOffset;
+    rotation.x += yOffset;
 
+    // Set constrants so the camera doesn't flip upside down
     if (rotation.x > 89.0f)
         rotation.x = 89.0f;
     if (rotation.x < -89.0f)
         rotation.x = -89.0f;
+
+    // Set constrants so the Y Rotation doesn't get too big
+    if (rotation.y > 359.9f)
+        rotation.y = 0.0f;
+    if (rotation.y < -359.9f)
+        rotation.y = 0.0f;
 }
 
 void Player::update()

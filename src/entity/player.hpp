@@ -8,6 +8,7 @@ namespace entity
 struct Player : Entity
 {
     Player();
+    Player(const glm::vec3 startPos);
 
     void handleKeys(glm::vec2 oldMouse, glm::vec2 newMouse);
     void update();
