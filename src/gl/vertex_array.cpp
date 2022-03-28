@@ -1,4 +1,4 @@
-#include <gl/vertexArray.hpp>
+#include <gl/vertex_array.hpp>
 
 #include <iostream>
 

@@ -1,4 +1,4 @@
-#include <utils/deltaCounter.hpp>
+#include <utils/delta_counter.hpp>
 
 DeltaCounter& DeltaCounter::getInstance()
 {

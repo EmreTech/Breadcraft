@@ -19,5 +19,5 @@ glm::vec3 globalToLocalPosition(const glm::vec3 pos)
 int positionToIndex(const glm::vec3 pos, int size)
 {
     float s = (float) size;
-    return pos.y * s * s + pos.z * s + pos.x;
+    return pos.y * pow(s, 2) + pos.z * s + pos.x;
 }

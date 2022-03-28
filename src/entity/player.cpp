@@ -1,7 +1,7 @@
 #include <entity/player.hpp>
 
 #include <utils/keyboard.hpp>
-#include <utils/deltaCounter.hpp>
+#include <utils/delta_counter.hpp>
 
 namespace
 {
@@ -80,8 +80,8 @@ void Player::handleKeys(glm::vec2 oldMouse, glm::vec2 newMouse)
     xOffset *= 1.25f;
     yOffset *= 1.25f;
 
-    rotation.y += xOffset;
-    rotation.x += yOffset;
+    rotation.y -= xOffset;
+    rotation.x -= yOffset;
 
     // Set constrants so the camera doesn't flip upside down
     if (rotation.x > 89.0f)

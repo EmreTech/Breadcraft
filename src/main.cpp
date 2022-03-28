@@ -1,12 +1,13 @@
 #include <window.hpp>
 #include <gl/shader.hpp>
-#include <gl/vertexArray.hpp>
+#include <gl/vertex_array.hpp>
 #include <gl/texture.hpp>
 #include <utils/keyboard.hpp>
-#include <utils/deltaCounter.hpp>
+#include <utils/delta_counter.hpp>
 #include <entity/player.hpp>
 
 #include <iostream>
+#include <chrono>
 #include <utils/glm_include.hpp>
 
 gl::Shader shade;
@@ -14,10 +15,13 @@ gl::VertexArray va;
 gl::Texture2D tex;
 std::vector<glm::vec3> boxPos;
 
-entity::Player player{glm::vec3(1.0f, 1.0f, 1.0f)};
+entity::Player player{glm::vec3(0.0f, 0.0f, 0.0f)};
 
 glm::vec2 lastPos, curPos;
 bool firstMouse = true;
+
+bool wireframe = false;
+std::chrono::time_point<std::chrono::steady_clock> lastWireframeTime;
 
 void processInput(GLFWwindow *window)
 {
@@ -35,6 +39,15 @@ void processInput(GLFWwindow *window)
         firstMouse = false;
     }
 
+    if (
+        Keyboard::getInstance().getKey(GLFW_KEY_Q) == GLFW_PRESS &&
+        (std::chrono::steady_clock::now() - lastWireframeTime).count() > 3e+9
+    )
+    {
+        wireframe = !wireframe;
+        lastWireframeTime = std::chrono::steady_clock::now();
+    }
+
     player.handleKeys(lastPos, curPos);
 
     lastPos = curPos;
@@ -47,79 +60,79 @@ void setup()
     shade.init("./res/shaders/basicVertex.glsl", "./res/shaders/basicFrag.glsl");
 
     std::vector<float> vertices {
-        // Back
-        1.0f, 1.0f, 0.0f,   // top right
-        1.0f, 0.0f, 0.0f,   // bottom right
-        0.0f, 0.0f, 0.0f,   // bottom left
-        0.0f, 1.0f, 0.0f,   // top left
+        // back face
+        0.0f, 0.0f, 0.0f, // bottom-left
+        1.0f, 0.0f, 0.0f, // bottom-right
+        1.0f, 1.0f, 0.0f, // top-right
+        0.0f, 1.0f, 0.0f, // top-left
 
-        // Front
-        1.0f, 1.0f, 1.0f,   // top right
-        1.0f, 0.0f, 1.0f,   // bottom right
-        0.0f, 0.0f, 1.0f,   // bottom left
-        0.0f, 1.0f, 1.0f,   // top left
+        // front face
+        0.0f, 0.0f, 1.0f, // bottom-left
+        1.0f, 0.0f, 1.0f, // bottom-right
+        1.0f, 1.0f, 1.0f, // top-right
+        0.0f, 1.0f, 1.0f, // top-left
 
-        // Left
-        0.0f, 1.0f, 1.0f,   // top right
-        0.0f, 1.0f, 0.0f,   // bottom right
-        0.0f, 0.0f, 0.0f,   // bottom left
-        0.0f, 0.0f, 1.0f,   // top left
+        // left face
+        0.0f, 0.0f, 0.0f, // bottom-left
+        0.0f, 0.0f, 1.0f, // bottom-right
+        0.0f, 1.0f, 1.0f, // top-right
+        0.0f, 1.0f, 0.0f, // top-left
 
-        // Right
-        1.0f, 1.0f, 1.0f,   // top right
-        1.0f, 1.0f, 0.0f,   // bottom right
-        1.0f, 0.0f, 0.0f,   // bottom left
-        1.0f, 0.0f, 1.0f,   // top left
+        // right face
+        1.0f, 0.0f, 0.0f, // bottom-left
+        1.0f, 0.0f, 1.0f, // bottom-right
+        1.0f, 1.0f, 1.0f, // top-right
+        1.0f, 1.0f, 0.0f, // top-left
 
-        // Bottom
-        1.0f, 0.0f, 1.0f,   // top right
-        1.0f, 0.0f, 0.0f,   // bottom right
-        0.0f, 0.0f, 0.0f,   // bottom left
-        0.0f, 0.0f, 1.0f,   // top left
+        // bottom face
+        0.0f, 0.0f, 1.0f, // bottom-left
+        1.0f, 0.0f, 1.0f, // bottom-right
+        1.0f, 0.0f, 0.0f, // top-right
+        0.0f, 0.0f, 0.0f, // top-left
 
-        // Top
-        1.0f, 1.0f, 1.0f,   // top right
-        1.0f, 1.0f, 0.0f,   // bottom right
-        0.0f, 1.0f, 0.0f,   // bottom left
-        0.0f, 1.0f, 1.0f,   // top left
+        // top face
+        0.0f, 1.0f, 1.0f, // bottom-left
+        1.0f, 1.0f, 1.0f, // bottom-right
+        1.0f, 1.0f, 0.0f, // top-right
+        0.0f, 1.0f, 0.0f, // top-left
     };
 
     std::vector<float> texCoords {
-        // Back
-        1.0f, 1.0f, // top right
-        1.0f, 0.0f, // bottom right
-        0.0f, 0.0f, // bottom left
-        0.0f, 1.0f, // top left
+        // back face
+        0.0f, 0.0f, // bottom-left
+        1.0f, 0.0f, // bottom-right
+        1.0f, 1.0f, // top-right
+        0.0f, 1.0f, // top-left
 
-        // Front
-        1.0f, 1.0f, // top right
-        1.0f, 0.0f, // bottom right
-        0.0f, 0.0f, // bottom left
-        0.0f, 1.0f, // top left
+        // front face
+        0.0f, 0.0f, // bottom-left
+        1.0f, 0.0f, // bottom-right
+        1.0f, 1.0f, // top-right
+        0.0f, 1.0f, // top-left
 
-        // Left
-        1.0f, 1.0f, // top right
-        1.0f, 0.0f, // bottom right
-        0.0f, 0.0f, // bottom left
-        0.0f, 1.0f, // top left
+        // left face
+        0.0f, 0.0f, // bottom-left
+        1.0f, 0.0f, // bottom-right
+        1.0f, 1.0f, // top-right
+        0.0f, 1.0f, // top-left
 
-        // Right
-        1.0f, 1.0f, // top right
-        1.0f, 0.0f, // bottom right
-        0.0f, 0.0f, // bottom left
-        0.0f, 1.0f, // top left
+        // right face
+        0.0f, 0.0f, // bottom-left
+        1.0f, 0.0f, // bottom-right
+        1.0f, 1.0f, // top-right
+        0.0f, 1.0f, // top-left
 
-        // Bottom
-        1.0f, 1.0f, // top right
-        1.0f, 0.0f, // bottom right
-        0.0f, 0.0f, // bottom left
-        0.0f, 1.0f, // top left
+        // bottom face
+        0.0f, 0.0f, // bottom-left
+        1.0f, 0.0f, // bottom-right
+        1.0f, 1.0f, // top-right
+        0.0f, 1.0f, // top-left
 
-        // Top
-        1.0f, 1.0f, // top right
-        1.0f, 0.0f, // bottom right
-        0.0f, 0.0f, // bottom left
-        0.0f, 1.0f, // top left
+        // top face
+        0.0f, 0.0f, // bottom-left
+        1.0f, 0.0f, // bottom-right
+        1.0f, 1.0f, // top-right
+        0.0f, 1.0f, // top-left
     };
 
     for (int y = 0; y < 3; y++)
@@ -132,12 +145,12 @@ void setup()
 
     for (size_t i{0}; i < 6; i++)
     {
-        indices.push_back(iCount);
-        indices.push_back(iCount + 1);
-        indices.push_back(iCount + 3);
+        indices.push_back(iCount + 0);
         indices.push_back(iCount + 1);
         indices.push_back(iCount + 2);
+        indices.push_back(iCount + 2);
         indices.push_back(iCount + 3);
+        indices.push_back(iCount + 0);
 
         iCount += 4;
     }
@@ -166,6 +179,11 @@ void render()
 
     shade.set("camera", player.getCameraMatrix());
 
+    if (wireframe)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    else
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
     va.bind();
     for (size_t i = 0; i < boxPos.size(); i++)
     {
@@ -190,8 +208,10 @@ int main(void)
         DeltaCounter::getInstance().update();
         processInput(Window::getWindow());
 
+        std::cout << "Player position: " <<
+        "(" << player.position.x << ", " << player.position.y << ")" << '\n';
         std::cout << "Player rotation: " <<
-        "(" << player.rotation.x << "," << player.rotation.y << ")" << '\n';
+        "(" << player.rotation.x << ", " << player.rotation.y << ")" << '\n';
 
         update();
         render();

@@ -3,6 +3,8 @@
 #include <array>
 #include <utils/glm_include.hpp>
 
+#include <world/constants.hpp>
+
 namespace world
 {
 
@@ -15,7 +17,7 @@ struct Chunk
 
     const glm::vec3 getChunkPos() const;
 
-    std::array<unsigned short, 4096> blocks;
+    std::array<unsigned short, CHUNK_VOLUME> blocks;
 
     private:
     glm::vec3 position;
